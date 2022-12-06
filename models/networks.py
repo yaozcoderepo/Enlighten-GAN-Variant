@@ -209,6 +209,21 @@ class GANLoss(nn.Module):
         return self.loss(input, target_tensor)
 
 
+class ContrastLoss(nn.Module):
+    def __init__(self, opt):
+        super().__init__()
+        self.opt = opt
+
+    def compute_contrast_loss(self, fake, real):
+        fake_mean = fake.mean(dim=(1, 2, 3))
+        real_mean = real.mean(dim=(1, 2, 3))
+        n = fake_mean / real_mean
+        diff = fake - real * (n[:, None, None, None].expand([*real.size()]))
+        diff[diff < 0] = 0.
+        diff /= 256.
+        return torch.mean(diff ** 2)
+
+
 class DiscLossWGANGP():
     def __init__(self):
         self.LAMBDA = 10
@@ -825,7 +840,7 @@ class Unet_resize_conv(nn.Module):
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
                         latent = (latent - torch.min(latent)) / (
-                                    torch.max(latent) - torch.min(latent))
+                                torch.max(latent) - torch.min(latent))
                     input = (input - torch.min(input)) / (torch.max(input) - torch.min(input))
                     output = latent + input * self.opt.skip
                     output = output * 2 - 1
@@ -834,7 +849,7 @@ class Unet_resize_conv(nn.Module):
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
                         latent = (latent - torch.min(latent)) / (
-                                    torch.max(latent) - torch.min(latent))
+                                torch.max(latent) - torch.min(latent))
                     output = latent + input * self.opt.skip
             else:
                 output = latent
@@ -904,7 +919,7 @@ class Unet_resize_conv(nn.Module):
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
                         latent = (latent - torch.min(latent)) / (
-                                    torch.max(latent) - torch.min(latent))
+                                torch.max(latent) - torch.min(latent))
                     input = (input - torch.min(input)) / (torch.max(input) - torch.min(input))
                     output = latent + input * self.opt.skip
                     output = output * 2 - 1
@@ -913,7 +928,7 @@ class Unet_resize_conv(nn.Module):
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
                         latent = (latent - torch.min(latent)) / (
-                                    torch.max(latent) - torch.min(latent))
+                                torch.max(latent) - torch.min(latent))
                     output = latent + input * self.opt.skip
             else:
                 output = latent

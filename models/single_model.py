@@ -43,6 +43,7 @@ class SingleModel(BaseModel):
             self.fcn.eval()
             for param in self.fcn.parameters():
                 param.requires_grad = False
+        self.contrast_loss = networks.ContrastLoss(opt)
         # load/define networks
         # The naming conversion is different from those used in the paper
         # Code (paper): G_A (G), G_B (F), D_A (D_Y), D_B (D_X)
@@ -364,6 +365,14 @@ class SingleModel(BaseModel):
                 else:
                     self.loss_fcn_b += loss_fcn_patch
             self.loss_G = self.loss_G_A + self.loss_fcn_b * vgg_w
+        loss_contrast = self.contrast_loss.compute_contrast_loss(self.fake_B, self.real_A)
+        loss_contrast_patch = self.contrast_loss.compute_contrast_loss(self.fake_patch,
+                                                                       self.input_patch)
+        for i in range(self.opt.patchD_3):
+            loss_contrast_patch += self.contrast_loss.compute_contrast_loss(self.fake_patch_1[i],
+                                                                            self.input_patch_1[i])
+        loss_contrast += loss_contrast_patch / (self.opt.patchD_3 + 1)
+        self.loss_G += loss_contrast
         self.loss_G.backward()
 
     def optimize_parameters(self, epoch):
