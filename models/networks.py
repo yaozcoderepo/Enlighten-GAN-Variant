@@ -1,20 +1,22 @@
-import torch
-import os
-import math
-import torch.nn as nn
-from torch.nn import init
 import functools
-from torch.autograd import Variable
-import torch.nn.functional as F
+import os
+
 import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.autograd import Variable
+from torch.nn import init
+
 # from torch.utils.serialization import load_lua
 from lib.nn import SynchronizedBatchNorm2d as SynBN2d
+
+
 ###############################################################################
 # Functions
 ###############################################################################
 
 def pad_tensor(input):
-    
     height_org, width_org = input.shape[2], input.shape[3]
     divide = 16
 
@@ -32,8 +34,8 @@ def pad_tensor(input):
 
         if height_res != 0:
             height_div = divide - height_res
-            pad_top = int(height_div  / 2)
-            pad_bottom = int(height_div  - pad_top)
+            pad_top = int(height_div / 2)
+            pad_bottom = int(height_div - pad_top)
         else:
             pad_top = 0
             pad_bottom = 0
@@ -52,9 +54,11 @@ def pad_tensor(input):
 
     return input, pad_left, pad_right, pad_top, pad_bottom
 
+
 def pad_tensor_back(input, pad_left, pad_right, pad_top, pad_bottom):
     height, width = input.shape[2], input.shape[3]
-    return input[:,:, pad_top: height - pad_bottom, pad_left: width - pad_right]
+    return input[:, :, pad_top: height - pad_bottom, pad_left: width - pad_right]
+
 
 def weights_init(m):
     classname = m.__class__.__name__
@@ -77,24 +81,30 @@ def get_norm_layer(norm_type='instance'):
     return norm_layer
 
 
-def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[], skip=False, opt=None):
+def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False,
+             gpu_ids=[], skip=False, opt=None):
     netG = None
     use_gpu = len(gpu_ids) > 0
     norm_layer = get_norm_layer(norm_type=norm)
 
     if use_gpu:
-        assert(torch.cuda.is_available())
+        assert (torch.cuda.is_available())
 
     if which_model_netG == 'resnet_9blocks':
-        netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9, gpu_ids=gpu_ids)
+        netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+                               use_dropout=use_dropout, n_blocks=9, gpu_ids=gpu_ids)
     elif which_model_netG == 'resnet_6blocks':
-        netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6, gpu_ids=gpu_ids)
+        netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer,
+                               use_dropout=use_dropout, n_blocks=6, gpu_ids=gpu_ids)
     elif which_model_netG == 'unet_128':
-        netG = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids)
+        netG = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer,
+                             use_dropout=use_dropout, gpu_ids=gpu_ids)
     elif which_model_netG == 'unet_256':
-        netG = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, skip=skip, opt=opt)
+        netG = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer,
+                             use_dropout=use_dropout, gpu_ids=gpu_ids, skip=skip, opt=opt)
     elif which_model_netG == 'unet_512':
-        netG = UnetGenerator(input_nc, output_nc, 9, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, skip=skip, opt=opt)
+        netG = UnetGenerator(input_nc, output_nc, 9, ngf, norm_layer=norm_layer,
+                             use_dropout=use_dropout, gpu_ids=gpu_ids, skip=skip, opt=opt)
     elif which_model_netG == 'sid_unet':
         netG = Unet(opt, skip)
     elif which_model_netG == 'sid_unet_shuffle':
@@ -119,17 +129,22 @@ def define_D(input_nc, ndf, which_model_netD,
     norm_layer = get_norm_layer(norm_type=norm)
 
     if use_gpu:
-        assert(torch.cuda.is_available())
+        assert (torch.cuda.is_available())
     if which_model_netD == 'basic':
-        netD = NLayerDiscriminator(input_nc, ndf, n_layers=3, norm_layer=norm_layer, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
+        netD = NLayerDiscriminator(input_nc, ndf, n_layers=3, norm_layer=norm_layer,
+                                   use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
     elif which_model_netD == 'n_layers':
-        netD = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
+        netD = NLayerDiscriminator(input_nc, ndf, n_layers_D, norm_layer=norm_layer,
+                                   use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
     elif which_model_netD == 'no_norm':
-        netD = NoNormDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
+        netD = NoNormDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid,
+                                   gpu_ids=gpu_ids)
     elif which_model_netD == 'no_norm_4':
-        netD = NoNormDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids)
+        netD = NoNormDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid,
+                                   gpu_ids=gpu_ids)
     elif which_model_netD == 'no_patchgan':
-        netD = FCDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids, patch=patch)
+        netD = FCDiscriminator(input_nc, ndf, n_layers_D, use_sigmoid=use_sigmoid, gpu_ids=gpu_ids,
+                               patch=patch)
     else:
         raise NotImplementedError('Discriminator model name [%s] is not recognized' %
                                   which_model_netD)
@@ -194,23 +209,22 @@ class GANLoss(nn.Module):
         return self.loss(input, target_tensor)
 
 
-
 class DiscLossWGANGP():
     def __init__(self):
         self.LAMBDA = 10
-        
+
     def name(self):
         return 'DiscLossWGAN-GP'
 
     def initialize(self, opt, tensor):
         # DiscLossLS.initialize(self, opt, tensor)
         self.LAMBDA = 10
-        
+
     # def get_g_loss(self, net, realA, fakeB):
     #     # First, G(A) should fake the discriminator
     #     self.D_fake = net.forward(fakeB)
     #     return -self.D_fake.mean()
-        
+
     def calc_gradient_penalty(self, netD, real_data, fake_data):
         alpha = torch.rand(1, 1)
         alpha = alpha.expand(real_data.size())
@@ -220,23 +234,25 @@ class DiscLossWGANGP():
 
         interpolates = interpolates.cuda()
         interpolates = Variable(interpolates, requires_grad=True)
-        
+
         disc_interpolates = netD.forward(interpolates)
 
         gradients = torch.autograd.grad(outputs=disc_interpolates, inputs=interpolates,
-                                  grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
-                                  create_graph=True, retain_graph=True, only_inputs=True)[0]
+                                        grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
+                                        create_graph=True, retain_graph=True, only_inputs=True)[0]
 
         gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * self.LAMBDA
         return gradient_penalty
+
 
 # Defines the generator that consists of Resnet blocks between a few
 # downsampling/upsampling operations.
 # Code and idea originally from Justin Johnson's architecture.
 # https://github.com/jcjohnson/fast-neural-style/
 class ResnetGenerator(nn.Module):
-    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, gpu_ids=[], padding_type='reflect'):
-        assert(n_blocks >= 0)
+    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False,
+                 n_blocks=6, gpu_ids=[], padding_type='reflect'):
+        assert (n_blocks >= 0)
         super(ResnetGenerator, self).__init__()
         self.input_nc = input_nc
         self.output_nc = output_nc
@@ -250,18 +266,19 @@ class ResnetGenerator(nn.Module):
 
         n_downsampling = 2
         for i in range(n_downsampling):
-            mult = 2**i
+            mult = 2 ** i
             model += [nn.Conv2d(ngf * mult, ngf * mult * 2, kernel_size=3,
                                 stride=2, padding=1),
                       norm_layer(ngf * mult * 2),
                       nn.ReLU(True)]
 
-        mult = 2**n_downsampling
+        mult = 2 ** n_downsampling
         for i in range(n_blocks):
-            model += [ResnetBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer, use_dropout=use_dropout)]
+            model += [ResnetBlock(ngf * mult, padding_type=padding_type, norm_layer=norm_layer,
+                                  use_dropout=use_dropout)]
 
         for i in range(n_downsampling):
-            mult = 2**(n_downsampling - i)
+            mult = 2 ** (n_downsampling - i)
             model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2),
                                          kernel_size=3, stride=2,
                                          padding=1, output_padding=1),
@@ -334,17 +351,24 @@ class UnetGenerator(nn.Module):
         self.gpu_ids = gpu_ids
         self.opt = opt
         # currently support only input_nc == output_nc
-        assert(input_nc == output_nc)
+        assert (input_nc == output_nc)
 
         # construct unet structure
-        unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, norm_layer=norm_layer, innermost=True, opt=opt)
+        unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, norm_layer=norm_layer,
+                                             innermost=True, opt=opt)
         for i in range(num_downs - 5):
-            unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, unet_block, norm_layer=norm_layer, use_dropout=use_dropout, opt=opt)
-        unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, unet_block, norm_layer=norm_layer, opt=opt)
-        unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, unet_block, norm_layer=norm_layer, opt=opt)
-        unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, unet_block, norm_layer=norm_layer, opt=opt)
-        unet_block = UnetSkipConnectionBlock(output_nc, ngf, unet_block, outermost=True, norm_layer=norm_layer, opt=opt)
-        
+            unet_block = UnetSkipConnectionBlock(ngf * 8, ngf * 8, unet_block,
+                                                 norm_layer=norm_layer, use_dropout=use_dropout,
+                                                 opt=opt)
+        unet_block = UnetSkipConnectionBlock(ngf * 4, ngf * 8, unet_block, norm_layer=norm_layer,
+                                             opt=opt)
+        unet_block = UnetSkipConnectionBlock(ngf * 2, ngf * 4, unet_block, norm_layer=norm_layer,
+                                             opt=opt)
+        unet_block = UnetSkipConnectionBlock(ngf, ngf * 2, unet_block, norm_layer=norm_layer,
+                                             opt=opt)
+        unet_block = UnetSkipConnectionBlock(output_nc, ngf, unet_block, outermost=True,
+                                             norm_layer=norm_layer, opt=opt)
+
         if skip == True:
             skipmodule = SkipModule(unet_block, opt)
             self.model = skipmodule
@@ -357,6 +381,7 @@ class UnetGenerator(nn.Module):
         else:
             return self.model(input)
 
+
 class SkipModule(nn.Module):
     def __init__(self, submodule, opt):
         super(SkipModule, self).__init__()
@@ -365,8 +390,7 @@ class SkipModule(nn.Module):
 
     def forward(self, x):
         latent = self.submodule(x)
-        return self.opt.skip*x + latent, latent
-
+        return self.opt.skip * x + latent, latent
 
 
 # Defines the submodule with skip connection.
@@ -374,7 +398,8 @@ class SkipModule(nn.Module):
 #   |-- downsampling -- |submodule| -- upsampling --|
 class UnetSkipConnectionBlock(nn.Module):
     def __init__(self, outer_nc, inner_nc,
-                 submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False, opt=None):
+                 submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d,
+                 use_dropout=False, opt=None):
         super(UnetSkipConnectionBlock, self).__init__()
         self.outermost = outermost
 
@@ -449,12 +474,13 @@ class UnetSkipConnectionBlock(nn.Module):
 
 # Defines the PatchGAN discriminator with the specified arguments.
 class NLayerDiscriminator(nn.Module):
-    def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False, gpu_ids=[]):
+    def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False,
+                 gpu_ids=[]):
         super(NLayerDiscriminator, self).__init__()
         self.gpu_ids = gpu_ids
 
         kw = 4
-        padw = int(np.ceil((kw-1)/2))
+        padw = int(np.ceil((kw - 1) / 2))
         sequence = [
             nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
             nn.LeakyReLU(0.2, True)
@@ -464,7 +490,7 @@ class NLayerDiscriminator(nn.Module):
         nf_mult_prev = 1
         for n in range(1, n_layers):
             nf_mult_prev = nf_mult
-            nf_mult = min(2**n, 8)
+            nf_mult = min(2 ** n, 8)
             sequence += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                           kernel_size=kw, stride=2, padding=padw),
@@ -473,7 +499,7 @@ class NLayerDiscriminator(nn.Module):
             ]
 
         nf_mult_prev = nf_mult
-        nf_mult = min(2**n_layers, 8)
+        nf_mult = min(2 ** n_layers, 8)
         sequence += [
             nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                       kernel_size=kw, stride=1, padding=padw),
@@ -494,13 +520,14 @@ class NLayerDiscriminator(nn.Module):
         # else:
         return self.model(input)
 
+
 class NoNormDiscriminator(nn.Module):
     def __init__(self, input_nc, ndf=64, n_layers=3, use_sigmoid=False, gpu_ids=[]):
         super(NoNormDiscriminator, self).__init__()
         self.gpu_ids = gpu_ids
 
         kw = 4
-        padw = int(np.ceil((kw-1)/2))
+        padw = int(np.ceil((kw - 1) / 2))
         sequence = [
             nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
             nn.LeakyReLU(0.2, True)
@@ -510,7 +537,7 @@ class NoNormDiscriminator(nn.Module):
         nf_mult_prev = 1
         for n in range(1, n_layers):
             nf_mult_prev = nf_mult
-            nf_mult = min(2**n, 8)
+            nf_mult = min(2 ** n, 8)
             sequence += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                           kernel_size=kw, stride=2, padding=padw),
@@ -518,7 +545,7 @@ class NoNormDiscriminator(nn.Module):
             ]
 
         nf_mult_prev = nf_mult
-        nf_mult = min(2**n_layers, 8)
+        nf_mult = min(2 ** n_layers, 8)
         sequence += [
             nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                       kernel_size=kw, stride=1, padding=padw),
@@ -538,13 +565,14 @@ class NoNormDiscriminator(nn.Module):
         # else:
         return self.model(input)
 
+
 class FCDiscriminator(nn.Module):
     def __init__(self, input_nc, ndf=64, n_layers=3, use_sigmoid=False, gpu_ids=[], patch=False):
         super(FCDiscriminator, self).__init__()
         self.gpu_ids = gpu_ids
         self.use_sigmoid = use_sigmoid
         kw = 4
-        padw = int(np.ceil((kw-1)/2))
+        padw = int(np.ceil((kw - 1) / 2))
         sequence = [
             nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
             nn.LeakyReLU(0.2, True)
@@ -554,7 +582,7 @@ class FCDiscriminator(nn.Module):
         nf_mult_prev = 1
         for n in range(1, n_layers):
             nf_mult_prev = nf_mult
-            nf_mult = min(2**n, 8)
+            nf_mult = min(2 ** n, 8)
             sequence += [
                 nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                           kernel_size=kw, stride=2, padding=padw),
@@ -562,7 +590,7 @@ class FCDiscriminator(nn.Module):
             ]
 
         nf_mult_prev = nf_mult
-        nf_mult = min(2**n_layers, 8)
+        nf_mult = min(2 ** n_layers, 8)
         sequence += [
             nn.Conv2d(ndf * nf_mult_prev, ndf * nf_mult,
                       kernel_size=kw, stride=1, padding=padw),
@@ -571,9 +599,9 @@ class FCDiscriminator(nn.Module):
 
         sequence += [nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]
         if patch:
-            self.linear = nn.Linear(7*7,1)
+            self.linear = nn.Linear(7 * 7, 1)
         else:
-            self.linear = nn.Linear(13*13,1)
+            self.linear = nn.Linear(13 * 13, 1)
         if use_sigmoid:
             self.sigmoid = nn.Sigmoid()
 
@@ -582,7 +610,7 @@ class FCDiscriminator(nn.Module):
     def forward(self, input):
         batchsize = input.size()[0]
         output = self.model(input)
-        output = output.view(batchsize,-1)
+        output = output.view(batchsize, -1)
         # print(output.size())
         output = self.linear(output)
         if self.use_sigmoid:
@@ -703,7 +731,7 @@ class Unet_resize_conv(nn.Module):
             self.tanh = nn.Tanh()
 
     def depth_to_space(self, input, block_size):
-        block_size_sq = block_size*block_size
+        block_size_sq = block_size * block_size
         output = input.permute(0, 2, 3, 1)
         (batch_size, d_height, d_width, d_depth) = output.size()
         s_depth = int(d_depth / block_size_sq)
@@ -712,7 +740,10 @@ class Unet_resize_conv(nn.Module):
         t_1 = output.resize(batch_size, d_height, d_width, block_size_sq, s_depth)
         spl = t_1.split(block_size, 3)
         stack = [t_t.resize(batch_size, d_height, s_width, s_depth) for t_t in spl]
-        output = torch.stack(stack,0).transpose(0,1).permute(0,2,1,3,4).resize(batch_size, s_height, s_width, s_depth)
+        output = torch.stack(stack, 0).transpose(0, 1).permute(0, 2, 1, 3, 4).resize(batch_size,
+                                                                                     s_height,
+                                                                                     s_width,
+                                                                                     s_depth)
         output = output.permute(0, 3, 1, 2)
         return output
 
@@ -753,29 +784,29 @@ class Unet_resize_conv(nn.Module):
             x = self.max_pool4(conv4)
 
             x = self.bn5_1(self.LReLU5_1(self.conv5_1(x)))
-            x = x*gray_5 if self.opt.self_attention else x
+            x = x * gray_5 if self.opt.self_attention else x
             conv5 = self.bn5_2(self.LReLU5_2(self.conv5_2(x)))
-            
+
             conv5 = F.upsample(conv5, scale_factor=2, mode='bilinear')
-            conv4 = conv4*gray_4 if self.opt.self_attention else conv4
+            conv4 = conv4 * gray_4 if self.opt.self_attention else conv4
             up6 = torch.cat([self.deconv5(conv5), conv4], 1)
             x = self.bn6_1(self.LReLU6_1(self.conv6_1(up6)))
             conv6 = self.bn6_2(self.LReLU6_2(self.conv6_2(x)))
 
             conv6 = F.upsample(conv6, scale_factor=2, mode='bilinear')
-            conv3 = conv3*gray_3 if self.opt.self_attention else conv3
+            conv3 = conv3 * gray_3 if self.opt.self_attention else conv3
             up7 = torch.cat([self.deconv6(conv6), conv3], 1)
             x = self.bn7_1(self.LReLU7_1(self.conv7_1(up7)))
             conv7 = self.bn7_2(self.LReLU7_2(self.conv7_2(x)))
 
             conv7 = F.upsample(conv7, scale_factor=2, mode='bilinear')
-            conv2 = conv2*gray_2 if self.opt.self_attention else conv2
+            conv2 = conv2 * gray_2 if self.opt.self_attention else conv2
             up8 = torch.cat([self.deconv7(conv7), conv2], 1)
             x = self.bn8_1(self.LReLU8_1(self.conv8_1(up8)))
             conv8 = self.bn8_2(self.LReLU8_2(self.conv8_2(x)))
 
             conv8 = F.upsample(conv8, scale_factor=2, mode='bilinear')
-            conv1 = conv1*gray if self.opt.self_attention else conv1
+            conv1 = conv1 * gray if self.opt.self_attention else conv1
             up9 = torch.cat([self.deconv8(conv8), conv1], 1)
             x = self.bn9_1(self.LReLU9_1(self.conv9_1(up9)))
             conv9 = self.LReLU9_2(self.conv9_2(x))
@@ -783,7 +814,7 @@ class Unet_resize_conv(nn.Module):
             latent = self.conv10(conv9)
 
             if self.opt.times_residual:
-                latent = latent*gray
+                latent = latent * gray
 
             # output = self.depth_to_space(conv10, 2)
             if self.opt.tanh:
@@ -793,23 +824,25 @@ class Unet_resize_conv(nn.Module):
                     if self.opt.latent_threshold:
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
-                        latent = (latent - torch.min(latent))/(torch.max(latent)-torch.min(latent))
-                    input = (input - torch.min(input))/(torch.max(input) - torch.min(input))
-                    output = latent + input*self.opt.skip
-                    output = output*2 - 1
+                        latent = (latent - torch.min(latent)) / (
+                                    torch.max(latent) - torch.min(latent))
+                    input = (input - torch.min(input)) / (torch.max(input) - torch.min(input))
+                    output = latent + input * self.opt.skip
+                    output = output * 2 - 1
                 else:
                     if self.opt.latent_threshold:
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
-                        latent = (latent - torch.min(latent))/(torch.max(latent)-torch.min(latent))
-                    output = latent + input*self.opt.skip
+                        latent = (latent - torch.min(latent)) / (
+                                    torch.max(latent) - torch.min(latent))
+                    output = latent + input * self.opt.skip
             else:
                 output = latent
 
             if self.opt.linear:
-                output = output/torch.max(torch.abs(output))
-            
-                
+                output = output / torch.max(torch.abs(output))
+
+
         elif self.opt.use_norm == 0:
             if self.opt.self_attention:
                 x = self.LReLU1_1(self.conv1_1(torch.cat((input, gray), 1)))
@@ -831,37 +864,37 @@ class Unet_resize_conv(nn.Module):
             x = self.max_pool4(conv4)
 
             x = self.LReLU5_1(self.conv5_1(x))
-            x = x*gray_5 if self.opt.self_attention else x
+            x = x * gray_5 if self.opt.self_attention else x
             conv5 = self.LReLU5_2(self.conv5_2(x))
 
             conv5 = F.upsample(conv5, scale_factor=2, mode='bilinear')
-            conv4 = conv4*gray_4 if self.opt.self_attention else conv4
+            conv4 = conv4 * gray_4 if self.opt.self_attention else conv4
             up6 = torch.cat([self.deconv5(conv5), conv4], 1)
             x = self.LReLU6_1(self.conv6_1(up6))
             conv6 = self.LReLU6_2(self.conv6_2(x))
 
             conv6 = F.upsample(conv6, scale_factor=2, mode='bilinear')
-            conv3 = conv3*gray_3 if self.opt.self_attention else conv3
+            conv3 = conv3 * gray_3 if self.opt.self_attention else conv3
             up7 = torch.cat([self.deconv6(conv6), conv3], 1)
             x = self.LReLU7_1(self.conv7_1(up7))
             conv7 = self.LReLU7_2(self.conv7_2(x))
 
             conv7 = F.upsample(conv7, scale_factor=2, mode='bilinear')
-            conv2 = conv2*gray_2 if self.opt.self_attention else conv2
+            conv2 = conv2 * gray_2 if self.opt.self_attention else conv2
             up8 = torch.cat([self.deconv7(conv7), conv2], 1)
             x = self.LReLU8_1(self.conv8_1(up8))
             conv8 = self.LReLU8_2(self.conv8_2(x))
 
             conv8 = F.upsample(conv8, scale_factor=2, mode='bilinear')
-            conv1 = conv1*gray if self.opt.self_attention else conv1
+            conv1 = conv1 * gray if self.opt.self_attention else conv1
             up9 = torch.cat([self.deconv8(conv8), conv1], 1)
             x = self.LReLU9_1(self.conv9_1(up9))
             conv9 = self.LReLU9_2(self.conv9_2(x))
 
             latent = self.conv10(conv9)
-            
+
             if self.opt.times_residual:
-                latent = latent*gray
+                latent = latent * gray
 
             if self.opt.tanh:
                 latent = self.tanh(latent)
@@ -870,22 +903,24 @@ class Unet_resize_conv(nn.Module):
                     if self.opt.latent_threshold:
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
-                        latent = (latent - torch.min(latent))/(torch.max(latent)-torch.min(latent))
-                    input = (input - torch.min(input))/(torch.max(input) - torch.min(input))
-                    output = latent + input*self.opt.skip
-                    output = output*2 - 1
+                        latent = (latent - torch.min(latent)) / (
+                                    torch.max(latent) - torch.min(latent))
+                    input = (input - torch.min(input)) / (torch.max(input) - torch.min(input))
+                    output = latent + input * self.opt.skip
+                    output = output * 2 - 1
                 else:
                     if self.opt.latent_threshold:
                         latent = F.relu(latent)
                     elif self.opt.latent_norm:
-                        latent = (latent - torch.min(latent))/(torch.max(latent)-torch.min(latent))
-                    output = latent + input*self.opt.skip
+                        latent = (latent - torch.min(latent)) / (
+                                    torch.max(latent) - torch.min(latent))
+                    output = latent + input * self.opt.skip
             else:
                 output = latent
 
             if self.opt.linear:
-                output = output/torch.max(torch.abs(output))
-        
+                output = output / torch.max(torch.abs(output))
+
         output = pad_tensor_back(output, pad_left, pad_right, pad_top, pad_bottom)
         latent = pad_tensor_back(latent, pad_left, pad_right, pad_top, pad_bottom)
         gray = pad_tensor_back(gray, pad_left, pad_right, pad_top, pad_bottom)
@@ -897,27 +932,35 @@ class Unet_resize_conv(nn.Module):
         else:
             return output
 
+
 class DnCNN(nn.Module):
-    def __init__(self, opt=None, depth=17, n_channels=64, image_channels=1, use_bnorm=True, kernel_size=3):
+    def __init__(self, opt=None, depth=17, n_channels=64, image_channels=1, use_bnorm=True,
+                 kernel_size=3):
         super(DnCNN, self).__init__()
         kernel_size = 3
         padding = 1
         layers = []
 
-        layers.append(nn.Conv2d(in_channels=image_channels, out_channels=n_channels, kernel_size=kernel_size, padding=padding, bias=True))
+        layers.append(
+            nn.Conv2d(in_channels=image_channels, out_channels=n_channels, kernel_size=kernel_size,
+                      padding=padding, bias=True))
         layers.append(nn.ReLU(inplace=True))
-        for _ in range(depth-2):
-            layers.append(nn.Conv2d(in_channels=n_channels, out_channels=n_channels, kernel_size=kernel_size, padding=padding, bias=False))
-            layers.append(nn.BatchNorm2d(n_channels, eps=0.0001, momentum = 0.95))
+        for _ in range(depth - 2):
+            layers.append(
+                nn.Conv2d(in_channels=n_channels, out_channels=n_channels, kernel_size=kernel_size,
+                          padding=padding, bias=False))
+            layers.append(nn.BatchNorm2d(n_channels, eps=0.0001, momentum=0.95))
             layers.append(nn.ReLU(inplace=True))
-        layers.append(nn.Conv2d(in_channels=n_channels, out_channels=image_channels, kernel_size=kernel_size, padding=padding, bias=False))
+        layers.append(
+            nn.Conv2d(in_channels=n_channels, out_channels=image_channels, kernel_size=kernel_size,
+                      padding=padding, bias=False))
         self.dncnn = nn.Sequential(*layers)
         self._initialize_weights()
 
     def forward(self, x):
         y = x
         out = self.dncnn(x)
-        return y+out
+        return y + out
 
     def _initialize_weights(self):
         for m in self.modules():
@@ -929,6 +972,7 @@ class DnCNN(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 init.constant_(m.weight, 1)
                 init.constant_(m.bias, 0)
+
 
 class Vgg16(nn.Module):
     def __init__(self):
@@ -980,10 +1024,10 @@ class Vgg16(nn.Module):
         if opt.vgg_choose != "no_maxpool":
             if opt.vgg_maxpooling:
                 h = F.max_pool2d(h, kernel_size=2, stride=2)
-        
+
         relu5_1 = F.relu(self.conv5_1(h), inplace=True)
         relu5_2 = F.relu(self.conv5_2(relu5_1), inplace=True)
-        conv5_3 = self.conv5_3(relu5_2) 
+        conv5_3 = self.conv5_3(relu5_2)
         h = F.relu(conv5_3, inplace=True)
         relu5_3 = h
         if opt.vgg_choose == "conv4_3":
@@ -1003,18 +1047,20 @@ class Vgg16(nn.Module):
         elif opt.vgg_choose == "relu5_3" or "maxpool":
             return relu5_3
 
+
 def vgg_preprocess(batch, opt):
     tensortype = type(batch.data)
-    (r, g, b) = torch.chunk(batch, 3, dim = 1)
-    batch = torch.cat((b, g, r), dim = 1) # convert RGB to BGR
-    batch = (batch + 1) * 255 * 0.5 # [-1, 1] -> [0, 255]
+    (r, g, b) = torch.chunk(batch, 3, dim=1)
+    batch = torch.cat((b, g, r), dim=1)  # convert RGB to BGR
+    batch = (batch + 1) * 255 * 0.5  # [-1, 1] -> [0, 255]
     if opt.vgg_mean:
         mean = tensortype(batch.data.size())
         mean[:, 0, :, :] = 103.939
         mean[:, 1, :, :] = 116.779
         mean[:, 2, :, :] = 123.680
-        batch = batch.sub(Variable(mean)) # subtract mean
+        batch = batch.sub(Variable(mean))  # subtract mean
     return batch
+
 
 class PerceptualLoss(nn.Module):
     def __init__(self, opt):
@@ -1031,6 +1077,7 @@ class PerceptualLoss(nn.Module):
             return torch.mean((img_fea - target_fea) ** 2)
         else:
             return torch.mean((self.instancenorm(img_fea) - self.instancenorm(target_fea)) ** 2)
+
 
 def load_vgg16(model_dir, gpu_ids):
     """ Use the model from https://github.com/abhiskk/fast-neural-style/blob/master/neural_style/utils.py """
@@ -1050,7 +1097,6 @@ def load_vgg16(model_dir, gpu_ids):
     vgg.load_state_dict(torch.load(os.path.join(model_dir, 'vgg16.weight')))
     vgg = torch.nn.DataParallel(vgg, gpu_ids)
     return vgg
-
 
 
 class FCN32s(nn.Module):
@@ -1111,7 +1157,6 @@ class FCN32s(nn.Module):
         self.upscore = nn.ConvTranspose2d(n_class, n_class, 64, stride=32,
                                           bias=False)
 
-
     def _initialize_weights(self):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -1161,11 +1206,13 @@ class FCN32s(nn.Module):
         h = h[:, :, 19:19 + x.size()[2], 19:19 + x.size()[3]].contiguous()
         return h
 
+
 def load_fcn(model_dir):
     fcn = FCN32s()
     fcn.load_state_dict(torch.load(os.path.join(model_dir, 'fcn32s_from_caffe.pth')))
     fcn.cuda()
     return fcn
+
 
 class SemanticLoss(nn.Module):
     def __init__(self, opt):
