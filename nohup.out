@@ -1,0 +1,123 @@
+ERROR:root:initializing
+INFO:root:Application Started
+INFO:root:Working directory: /home/yz7327/.visdom
+ERROR:root:initializing
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/local/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/__main__.py", line 15, in <module>
+    download_scripts_and_run()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 187, in download_scripts_and_run
+    main()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 177, in main
+    start_server(port=FLAGS.port, hostname=FLAGS.hostname, base_url=base_url,
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 46, in start_server
+    app.listen(port, max_buffer_size=1024 ** 3)
+  File "/usr/local/lib/python3.8/site-packages/tornado/web.py", line 2134, in listen
+    server.listen(
+  File "/usr/local/lib/python3.8/site-packages/tornado/tcpserver.py", line 183, in listen
+    sockets = bind_sockets(
+  File "/usr/local/lib/python3.8/site-packages/tornado/netutil.py", line 162, in bind_sockets
+    sock.bind(sockaddr)
+OSError: [Errno 98] Address already in use
+Checking for scripts.
+It's Alive!
+ERROR:root:initializing
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/local/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/__main__.py", line 15, in <module>
+    download_scripts_and_run()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 187, in download_scripts_and_run
+    main()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 177, in main
+    start_server(port=FLAGS.port, hostname=FLAGS.hostname, base_url=base_url,
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 46, in start_server
+    app.listen(port, max_buffer_size=1024 ** 3)
+  File "/usr/local/lib/python3.8/site-packages/tornado/web.py", line 2134, in listen
+    server.listen(
+  File "/usr/local/lib/python3.8/site-packages/tornado/tcpserver.py", line 183, in listen
+    sockets = bind_sockets(
+  File "/usr/local/lib/python3.8/site-packages/tornado/netutil.py", line 162, in bind_sockets
+    sock.bind(sockaddr)
+OSError: [Errno 98] Address already in use
+Checking for scripts.
+It's Alive!
+ERROR:root:initializing
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/local/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/__main__.py", line 15, in <module>
+    download_scripts_and_run()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 187, in download_scripts_and_run
+    main()
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 177, in main
+    start_server(port=FLAGS.port, hostname=FLAGS.hostname, base_url=base_url,
+  File "/usr/local/lib/python3.8/site-packages/visdom/server/run_server.py", line 46, in start_server
+    app.listen(port, max_buffer_size=1024 ** 3)
+  File "/usr/local/lib/python3.8/site-packages/tornado/web.py", line 2134, in listen
+    server.listen(
+  File "/usr/local/lib/python3.8/site-packages/tornado/tcpserver.py", line 183, in listen
+    sockets = bind_sockets(
+  File "/usr/local/lib/python3.8/site-packages/tornado/netutil.py", line 162, in bind_sockets
+    sock.bind(sockaddr)
+OSError: [Errno 98] Address already in use
+Checking for scripts.
+It's Alive!
+INFO:tornado.access:200 POST /env/main (::1) 0.59ms
+INFO:tornado.access:101 GET /vis_socket (::1) 0.45ms
+INFO:root:Opened visdom socket from ip: ::1
+INFO:tornado.access:200 POST /events (::1) 8.35ms
+INFO:tornado.access:200 POST /events (::1) 0.97ms
+INFO:tornado.access:200 POST /events (::1) 0.72ms
+INFO:tornado.access:200 POST /events (::1) 0.70ms
+INFO:tornado.access:200 POST /events (::1) 1.22ms
+INFO:tornado.access:200 POST /events (::1) 0.34ms
+INFO:tornado.access:200 POST /events (::1) 0.32ms
+INFO:tornado.access:200 POST /events (::1) 0.33ms
+INFO:tornado.access:200 POST /events (::1) 0.59ms
+INFO:tornado.access:200 POST /events (::1) 0.57ms
+INFO:tornado.access:200 POST /events (::1) 0.78ms
+INFO:tornado.access:200 POST /events (::1) 0.50ms
+INFO:tornado.access:200 POST /events (::1) 0.42ms
+INFO:tornado.access:200 POST /events (::1) 0.36ms
+INFO:tornado.access:200 POST /events (::1) 0.71ms
+INFO:tornado.access:200 POST /events (::1) 0.33ms
+INFO:tornado.access:200 POST /events (::1) 0.32ms
+INFO:tornado.access:200 POST /events (::1) 0.32ms
+INFO:tornado.access:200 POST /events (::1) 0.35ms
+INFO:tornado.access:200 POST /events (::1) 1.00ms
+INFO:tornado.access:200 POST /events (::1) 0.94ms
+INFO:tornado.access:200 POST /events (::1) 0.67ms
+INFO:tornado.access:200 POST /events (::1) 0.63ms
+INFO:tornado.access:200 POST /events (::1) 1.37ms
+INFO:tornado.access:200 POST /events (::1) 0.38ms
+INFO:tornado.access:200 POST /events (::1) 0.34ms
+INFO:tornado.access:200 POST /events (::1) 0.32ms
+INFO:tornado.access:200 POST /events (::1) 0.51ms
+INFO:tornado.access:200 POST /events (::1) 0.66ms
+INFO:tornado.access:200 POST /events (::1) 0.85ms
+INFO:tornado.access:200 POST /events (::1) 0.81ms
+INFO:tornado.access:200 POST /events (::1) 0.51ms
+INFO:tornado.access:200 POST /events (::1) 0.43ms
+INFO:tornado.access:200 POST /events (::1) 0.95ms
+INFO:tornado.access:200 POST /events (::1) 0.41ms
+INFO:tornado.access:200 POST /events (::1) 0.36ms
+INFO:tornado.access:200 POST /events (::1) 0.39ms
+INFO:tornado.access:200 POST /events (::1) 0.58ms
+INFO:tornado.access:200 POST /events (::1) 1.13ms
+INFO:tornado.access:200 POST /events (::1) 1.10ms
+INFO:tornado.access:200 POST /events (::1) 0.67ms
+INFO:tornado.access:200 POST /events (::1) 0.64ms
+INFO:tornado.access:200 POST /events (::1) 0.96ms
+INFO:tornado.access:200 POST /events (::1) 0.34ms
+INFO:tornado.access:200 POST /events (::1) 0.32ms
+INFO:tornado.access:200 POST /events (::1) 0.34ms
+INFO:tornado.access:200 POST /events (::1) 0.67ms
+INFO:tornado.access:200 POST /events (::1) 0.63ms
