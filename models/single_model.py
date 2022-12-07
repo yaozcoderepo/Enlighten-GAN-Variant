@@ -181,7 +181,9 @@ class SingleModel(BaseModel):
                                                                                          fake.data)
         elif self.opt.use_ragan and use_ragan:
             loss_D = (self.criterionGAN(pred_real - torch.mean(pred_fake), True) +
-                      self.criterionGAN(pred_fake - torch.mean(pred_real), False)) / 2
+                      self.criterionGAN(pred_fake - torch.mean(pred_real), False) +
+                      self.criterionGAN(pred_real - torch.mean(pred_real), False) +
+                      self.criterionGAN(pred_fake - torch.mean(pred_fake), False)) / 4
         else:
             loss_D_real = self.criterionGAN(pred_real, True)
             loss_D_fake = self.criterionGAN(pred_fake, False)
@@ -385,13 +387,10 @@ class SingleModel(BaseModel):
         # D_A
         self.optimizer_D_A.zero_grad()
         self.backward_D_A()
-        if not self.opt.patchD:
-            self.optimizer_D_A.step()
-        else:
-            # self.forward()
+        self.optimizer_D_A.step()
+        if self.opt.patchD:
             self.optimizer_D_P.zero_grad()
             self.backward_D_P()
-            self.optimizer_D_A.step()
             self.optimizer_D_P.step()
 
     def get_current_errors(self, epoch):
