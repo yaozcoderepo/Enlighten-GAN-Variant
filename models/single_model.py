@@ -372,7 +372,7 @@ class SingleModel(BaseModel):
             loss_contrast_patch += self.contrast_loss.compute_contrast_loss(self.fake_patch_1[i],
                                                                             self.input_patch_1[i])
         loss_contrast += loss_contrast_patch / (self.opt.patchD_3 + 1)
-        contrast_coeff = 0.4
+        contrast_coeff = 0.1
         self.loss_G += loss_contrast * contrast_coeff
         self.loss_G.backward()
 
