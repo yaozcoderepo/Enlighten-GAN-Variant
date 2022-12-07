@@ -214,11 +214,20 @@ class ContrastLoss(nn.Module):
         super().__init__()
         self.opt = opt
 
+    # def compute_contrast_loss(self, fake, real):
+    #     fake_mean = fake.mean(dim=(1, 2, 3))
+    #     real_mean = real.mean(dim=(1, 2, 3))
+    #     n = fake_mean / real_mean
+    #     diff = fake - real * (n[:, None, None, None].expand([*real.size()]))
+    #     diff[diff < 0] = 0.
+    #     diff /= 256.
+    #     return torch.mean(diff ** 2)
+
     def compute_contrast_loss(self, fake, real):
-        fake_mean = fake.mean(dim=(1, 2, 3))
-        real_mean = real.mean(dim=(1, 2, 3))
+        fake_mean = fake.mean(dim=(2, 3))
+        real_mean = real.mean(dim=(2, 3))
         n = fake_mean / real_mean
-        diff = fake - real * (n[:, None, None, None].expand([*real.size()]))
+        diff = fake - real * (n[:, :, None, None].expand([*real.size()]))
         diff[diff < 0] = 0.
         diff /= 256.
         return torch.mean(diff ** 2)
