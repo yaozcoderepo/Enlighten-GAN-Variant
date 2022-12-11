@@ -636,95 +636,95 @@ class Unet_resize_conv(nn.Module):
             self.downsample_4 = nn.MaxPool2d(2)
         else:
             self.conv1_1 = nn.Conv2d(3, 32, 3, padding=p)
-        self.LReLU1_1 = nn.GELU(approximate='none')
+        self.LReLU1_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn1_1 = SynBN2d(32) if self.opt.syn_norm else nn.BatchNorm2d(32)
         self.conv1_2 = nn.Conv2d(32, 32, 3, padding=p)
-        self.LReLU1_2 = nn.GELU(approximate='none')
+        self.LReLU1_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn1_2 = SynBN2d(32) if self.opt.syn_norm else nn.BatchNorm2d(32)
         self.max_pool1 = nn.AvgPool2d(2) if self.opt.use_avgpool == 1 else nn.MaxPool2d(2)
 
         self.conv2_1 = nn.Conv2d(32, 64, 3, padding=p)
-        self.LReLU2_1 = nn.GELU(approximate='none')
+        self.LReLU2_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn2_1 = SynBN2d(64) if self.opt.syn_norm else nn.BatchNorm2d(64)
         self.conv2_2 = nn.Conv2d(64, 64, 3, padding=p)
-        self.LReLU2_2 = nn.GELU(approximate='none')
+        self.LReLU2_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn2_2 = SynBN2d(64) if self.opt.syn_norm else nn.BatchNorm2d(64)
         self.max_pool2 = nn.AvgPool2d(2) if self.opt.use_avgpool == 1 else nn.MaxPool2d(2)
 
         self.conv3_1 = nn.Conv2d(64, 128, 3, padding=p)
-        self.LReLU3_1 = nn.GELU(approximate='none')
+        self.LReLU3_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn3_1 = SynBN2d(128) if self.opt.syn_norm else nn.BatchNorm2d(128)
         self.conv3_2 = nn.Conv2d(128, 128, 3, padding=p)
-        self.LReLU3_2 = nn.GELU(approximate='none')
+        self.LReLU3_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn3_2 = SynBN2d(128) if self.opt.syn_norm else nn.BatchNorm2d(128)
         self.max_pool3 = nn.AvgPool2d(2) if self.opt.use_avgpool == 1 else nn.MaxPool2d(2)
 
         self.conv4_1 = nn.Conv2d(128, 256, 3, padding=p)
-        self.LReLU4_1 = nn.GELU(approximate='none')
+        self.LReLU4_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn4_1 = SynBN2d(256) if self.opt.syn_norm else nn.BatchNorm2d(256)
         self.conv4_2 = nn.Conv2d(256, 256, 3, padding=p)
-        self.LReLU4_2 = nn.GELU(approximate='none')
+        self.LReLU4_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn4_2 = SynBN2d(256) if self.opt.syn_norm else nn.BatchNorm2d(256)
         self.max_pool4 = nn.AvgPool2d(2) if self.opt.use_avgpool == 1 else nn.MaxPool2d(2)
 
         self.conv5_1 = nn.Conv2d(256, 512, 3, padding=p)
-        self.LReLU5_1 = nn.GELU(approximate='none')
+        self.LReLU5_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn5_1 = SynBN2d(512) if self.opt.syn_norm else nn.BatchNorm2d(512)
         self.conv5_2 = nn.Conv2d(512, 512, 3, padding=p)
-        self.LReLU5_2 = nn.GELU(approximate='none')
+        self.LReLU5_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn5_2 = SynBN2d(512) if self.opt.syn_norm else nn.BatchNorm2d(512)
 
         # self.deconv5 = nn.ConvTranspose2d(512, 256, 2, stride=2)
         self.deconv5 = nn.Conv2d(512, 256, 3, padding=p)
         self.conv6_1 = nn.Conv2d(512, 256, 3, padding=p)
-        self.LReLU6_1 = nn.GELU(approximate='none')
+        self.LReLU6_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn6_1 = SynBN2d(256) if self.opt.syn_norm else nn.BatchNorm2d(256)
         self.conv6_2 = nn.Conv2d(256, 256, 3, padding=p)
-        self.LReLU6_2 = nn.GELU(approximate='none')
+        self.LReLU6_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn6_2 = SynBN2d(256) if self.opt.syn_norm else nn.BatchNorm2d(256)
 
         # self.deconv6 = nn.ConvTranspose2d(256, 128, 2, stride=2)
         self.deconv6 = nn.Conv2d(256, 128, 3, padding=p)
         self.conv7_1 = nn.Conv2d(256, 128, 3, padding=p)
-        self.LReLU7_1 = nn.GELU(approximate='none')
+        self.LReLU7_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn7_1 = SynBN2d(128) if self.opt.syn_norm else nn.BatchNorm2d(128)
         self.conv7_2 = nn.Conv2d(128, 128, 3, padding=p)
-        self.LReLU7_2 = nn.GELU(approximate='none')
+        self.LReLU7_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn7_2 = SynBN2d(128) if self.opt.syn_norm else nn.BatchNorm2d(128)
 
         # self.deconv7 = nn.ConvTranspose2d(128, 64, 2, stride=2)
         self.deconv7 = nn.Conv2d(128, 64, 3, padding=p)
         self.conv8_1 = nn.Conv2d(128, 64, 3, padding=p)
-        self.LReLU8_1 = nn.GELU(approximate='none')
+        self.LReLU8_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn8_1 = SynBN2d(64) if self.opt.syn_norm else nn.BatchNorm2d(64)
         self.conv8_2 = nn.Conv2d(64, 64, 3, padding=p)
-        self.LReLU8_2 = nn.GELU(approximate='none')
+        self.LReLU8_2 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn8_2 = SynBN2d(64) if self.opt.syn_norm else nn.BatchNorm2d(64)
 
         # self.deconv8 = nn.ConvTranspose2d(64, 32, 2, stride=2)
         self.deconv8 = nn.Conv2d(64, 32, 3, padding=p)
         self.conv9_1 = nn.Conv2d(64, 32, 3, padding=p)
-        self.LReLU9_1 = nn.GELU(approximate='none')
+        self.LReLU9_1 = nn.SELU(inplace=True)
         if self.opt.use_norm == 1:
             self.bn9_1 = SynBN2d(32) if self.opt.syn_norm else nn.BatchNorm2d(32)
         self.conv9_2 = nn.Conv2d(32, 32, 3, padding=p)
-        self.LReLU9_2 = nn.GELU(approximate='none')
+        self.LReLU9_2 = nn.SELU(inplace=True)
 
         self.conv10 = nn.Conv2d(32, 3, 1)
         if self.opt.tanh:
