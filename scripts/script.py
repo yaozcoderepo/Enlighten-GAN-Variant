@@ -1,5 +1,5 @@
-import os
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--port", type=str, default="8097")
@@ -8,7 +8,7 @@ parser.add_argument("--predict", action='store_true')
 opt = parser.parse_args()
 
 if opt.train:
-	os.system("python train.py \
+    os.system("python train.py \
 		--dataroot ../final_dataset \
 		--no_dropout \
 		--name enlightening \
@@ -34,12 +34,12 @@ if opt.train:
 		--instance_norm 0 \
 		--vgg 1 \
         --vgg_choose relu5_1 \
-		--gpu_ids 0,1,2 \
+		--gpu_ids 0,1 \
 		--display_port=" + opt.port)
 
 elif opt.predict:
-	for i in range(1):
-	        os.system("python predict.py \
+    for i in range(1):
+        os.system("python predict.py \
 	        	--dataroot ../test_dataset \
 	        	--name enlightening \
 	        	--model single \
@@ -53,4 +53,4 @@ elif opt.predict:
                 --self_attention \
                 --times_residual \
 	        	--instance_norm 0 --resize_or_crop='no'\
-	        	--which_epoch " + str(200 - i*5))
+	        	--which_epoch " + str(200 - i * 5))
