@@ -1,3 +1,11 @@
+## Branch Guideline:
+1. `main` branch is the original EnlightenGAN model. Some changes are only made for version compatibility.
+2. `contrast-loss` branch includes the combined-channel and individual-channel contrast loss.
+3. `augmented-discriminator-loss` branch namely includes the Augmented Global Discriminator Loss function.
+4. `augmented-discriminator-loss-with-contrast-loss` branch includes the Augmented Global Discriminator Loss Function alongside the individual-channel Contrast Loss Function. This version is the best-performing one.
+5. `activation` branch contains the experiment with different activation functions.
+
+**Below is the readme documentation from original code.**
 # EnlightenGAN
 
 IEEE Transaction on Image Processing, 2020, [EnlightenGAN: Deep Light Enhancement without Paired Supervision](https://arxiv.org/abs/1906.06972)
